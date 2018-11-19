@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -12,7 +11,9 @@ namespace StreamsDemo
 
     public static class StreamsExtension
     {
-        
+
+        private const int DEFAULT_BUFFER = 100;
+
         #region Public members
 
         #region TODO: Implement by byte copy logic using class FileStream as a backing store stream .
@@ -55,7 +56,6 @@ namespace StreamsDemo
             }
 
             // TODO: step 2. Create byte array on base string content - use  System.Text.Encoding class
-
 
             byte[] bytes = Encoding.UTF8.GetBytes(data);
             // TODO: step 3. Use MemoryStream instance to read from byte array (from step 2)
@@ -104,7 +104,6 @@ namespace StreamsDemo
             InputValidation(sourcePath, destinationPath);
 
             int count = 0;
-            const int DEFAULT_BUFFER = 100;
             byte[] bytes = new byte[DEFAULT_BUFFER];
 
             using (FileStream fileWriter = new FileStream(sourcePath, FileMode.Open))
@@ -141,14 +140,13 @@ namespace StreamsDemo
             var memoryStream = new MemoryStream(bytes);
             var streamWriter = new StreamWriter(destinationPath);
 
-            const int BUFFER_SIZE = 100;
-            bytes = new byte[BUFFER_SIZE];
+            bytes = new byte[DEFAULT_BUFFER];
             int count = 0;
 
-            while (memoryStream.Read(bytes, 0, BUFFER_SIZE) > 0)
+            while (memoryStream.Read(bytes, 0, DEFAULT_BUFFER) > 0)
             {
                 streamWriter.Write(Encoding.UTF8.GetChars(bytes));
-                count += BUFFER_SIZE;
+                count += DEFAULT_BUFFER;
             }
 
             memoryStream.Dispose();
@@ -165,19 +163,18 @@ namespace StreamsDemo
         {
             InputValidation(sourcePath, destinationPath);
 
-            const int BUFFER_SIZE = 100;
             int count = 0;
 
             var stream = new FileStream(sourcePath, FileMode.Open);
             var streamGetter = new FileStream(destinationPath, FileMode.OpenOrCreate);
-            var bufferStream = new BufferedStream(stream, BUFFER_SIZE);
+            var bufferStream = new BufferedStream(stream, DEFAULT_BUFFER);
 
-            byte[] bytes = new byte[BUFFER_SIZE];
+            byte[] bytes = new byte[DEFAULT_BUFFER];
 
-            while(bufferStream.Read(bytes, 0, BUFFER_SIZE) > 0)
+            while(bufferStream.Read(bytes, 0, DEFAULT_BUFFER) > 0)
             {
-                streamGetter.Write(bytes, 0, BUFFER_SIZE);
-                count += BUFFER_SIZE;
+                streamGetter.Write(bytes, 0, DEFAULT_BUFFER);
+                count += DEFAULT_BUFFER;
             }
 
             streamGetter.Dispose();
